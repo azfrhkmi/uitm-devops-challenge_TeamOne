@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import clsx from 'clsx'
@@ -14,26 +14,53 @@ interface ModalEmailCheckProps {
 
 function ModalEmailCheck({ isModal = true }: Readonly<ModalEmailCheckProps>) {
   const router = useRouter()
+  const [localError, setLocalError] = useState<string | null>(null)
+  const [isChecking, setIsChecking] = useState(false)
+  
   const {
     email,
-    isLoading,
-    error,
     setEmail,
     validateEmail,
-    submitEmailCheck,
   } = useAuthStore()
 
   const isEmailValid = validateEmail(email)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    const data = (await submitEmailCheck()) as { exists?: boolean } | undefined
-    const exists = Boolean(data?.exists)
-    router.push(exists ? '/auth/login' : '/auth/signup')
+    setLocalError(null)
+    setIsChecking(true)
+    
+    try {
+      // 1. Call API directly
+      const res = await fetch('/api/auth/check-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      })
+
+      const data = await res.json()
+      console.log("🔍 Email Check Result:", data)
+
+      // 2. Smart Redirection Logic
+      if (data.available === true) {
+        // ✅ Case A: New User -> Go to Sign Up
+        console.log("✨ New user detected. Going to Sign Up.")
+        router.push('/auth/signup')
+      } else {
+        // 🏠 Case B: Existing User -> Go to Login
+        console.log("👋 Existing user detected. Going to Login.")
+        router.push('/auth/login')
+      }
+
+    } catch (err) {
+      console.error("Check failed", err)
+      setLocalError("Connection error. Please try again.")
+    } finally {
+      setIsChecking(false)
+    }
   }
 
   const handleGoogleLogin = () => {
-    // Redirect to Google OAuth endpoint
     window.location.href = '/api/auth/google'
   }
 
@@ -42,7 +69,6 @@ function ModalEmailCheck({ isModal = true }: Readonly<ModalEmailCheckProps>) {
       isModal ? 'shadow-xl' : 'border border-slate-400',
       'bg-white rounded-3xl max-w-md w-full p-8',
     ])}>
-      {/* Header */}
       <div className="text-center mb-6">
         <h2 className="text-2xl font-semibold text-slate-900 mb-2">
           Log in or sign up
@@ -50,45 +76,46 @@ function ModalEmailCheck({ isModal = true }: Readonly<ModalEmailCheckProps>) {
         <div className="w-full h-px bg-slate-200 mt-4"></div>
       </div>
 
-      {/* Content */}
       <div className="mb-8">
         <p className="text-lg text-slate-600 text-center mb-6">
           Welcome to Rentverse
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email Input */}
           <InputEmail
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => {
+               setEmail(e.target.value)
+               setLocalError(null)
+            }}
             placeholder="Email"
             required
           />
 
-          {/* Error Message */}
-          {error && (
-            <div className="text-red-600 text-sm text-center">
-              {error}
+          {/* Error Box (Only for connection errors now) */}
+          {localError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3">
+              <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center shrink-0">
+                <span className="text-red-600 font-bold text-xs">!</span>
+              </div>
+              <p className="text-sm font-medium">{localError}</p>
             </div>
           )}
 
-          {/* Continue Button */}
           <ButtonFilled
             type="submit"
-            disabled={!isEmailValid || isLoading}
+            disabled={!isEmailValid || isChecking}
           >
-            {isLoading ? 'Loading...' : 'Continue'}
+            {isChecking ? 'Checking...' : 'Continue'}
           </ButtonFilled>
         </form>
 
-        {/* Divider */}
         <div className="flex items-center my-6">
           <div className="flex-grow border-t border-slate-200"></div>
           <span className="px-3 text-sm text-slate-500">or</span>
           <div className="flex-grow border-t border-slate-200"></div>
         </div>
 
-        {/* Google Login Button */}
         <button
           onClick={handleGoogleLogin}
           className="w-full flex items-center justify-center px-4 py-3 border border-slate-300 rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition-colors duration-200 font-medium"
@@ -107,7 +134,6 @@ function ModalEmailCheck({ isModal = true }: Readonly<ModalEmailCheckProps>) {
   )
 
   if (isModal) {
-    // Render as floating modal with backdrop
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         {containerContent}
@@ -115,7 +141,6 @@ function ModalEmailCheck({ isModal = true }: Readonly<ModalEmailCheckProps>) {
     )
   }
 
-  // Render as regular container without backdrop
   return (
     <div className="flex items-center justify-center p-4">
       {containerContent}

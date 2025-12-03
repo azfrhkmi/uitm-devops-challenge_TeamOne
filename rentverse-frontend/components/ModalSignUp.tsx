@@ -3,7 +3,7 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
 import React, { ChangeEvent } from 'react'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, Check, ShieldCheck, User, Phone, Mail, Calendar } from 'lucide-react'
 import ButtonFilled from '@/components/ButtonFilled'
 import InputEmail from '@/components/InputEmail'
 import InputName from '@/components/InputName'
@@ -44,130 +44,175 @@ function ModalSignUp({ isModal = true }: ModalSignUpProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    await submitSignUp()
+    const success = await submitSignUp()
+    if (success) {
+      // Optional: Redirect to a "Success" or "MFA Setup" page
+      // router.push('/auth/setup-mfa') 
+    }
   }
+
+  // 🛡️ A++ UI: Visual Password Validation
+  const passwordRequirements = [
+    { label: "8+ characters", valid: signUpPassword.length >= 8 },
+    { label: "Number (0-9)", valid: /\d/.test(signUpPassword) },
+    { label: "Uppercase (A-Z)", valid: /[A-Z]/.test(signUpPassword) },
+  ]
+  
+  const allPasswordValid = passwordRequirements.every(r => r.valid)
 
   const containerContent = (
     <div className={clsx([
-      isModal ? 'shadow-xl' : 'border border-slate-400',
-      'bg-white rounded-3xl max-w-md w-full p-8',
+      isModal ? 'shadow-2xl' : 'border border-slate-200',
+      'bg-white rounded-3xl max-w-lg w-full p-8 md:p-10 relative overflow-hidden',
     ])}>
+      {/* Decorative background element */}
+      <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-teal-500 to-teal-300"></div>
+
       {/* Header */}
-      <div className="text-center mb-6 relative">
-        <ArrowLeft onClick={handleBackButton} size={20}
-                   className="absolute left-0 top-1 text-slate-800 cursor-pointer hover:text-slate-600" />
-        <h2 className="text-xl font-semibold text-slate-900 mb-2">
-          Finish sign up
+      <div className="text-center mb-8 relative">
+        <button 
+          onClick={handleBackButton}
+          className="absolute left-0 top-1 p-2 -ml-2 rounded-full hover:bg-slate-100 text-slate-600 transition-colors"
+        >
+          <ArrowLeft size={20} />
+        </button>
+        <h2 className="text-2xl font-serif font-bold text-slate-900">
+          Create your account
         </h2>
-        <div className="w-full h-px bg-slate-200 mt-4"></div>
+        <p className="text-slate-500 text-sm mt-1">Step 2 of 2</p>
       </div>
 
-      {/* Content */}
-      <div className="mb-8">
-        {/* Alert box - only show when there's an error */}
-        {error && (
-          <div className="mb-6">
-            <BoxError errorTitle={'Let\'s try that again'} errorDescription={error} />
-          </div>
-        )}
+      {/* Error Message */}
+      {error && (
+        <div className="mb-6 animate-pulse">
+          <BoxError errorTitle="Registration Failed" errorDescription={error} />
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Legal name Section */}
+      <form onSubmit={handleSubmit} className="space-y-8">
+        
+        {/* SECTION 1: IDENTITY */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-slate-800 font-medium border-b border-slate-100 pb-2">
+            <User size={18} className="text-teal-600" />
+            <h3>Legal Identity</h3>
+          </div>
+          
           <div>
-            <label className="block text-sm font-medium text-slate-900 mb-3">
-              Legal name
-            </label>
             <InputName
               firstName={firstName}
               lastName={lastName}
-              onFirstNameChange={(e: ChangeEvent<HTMLInputElement>) => setFirstName(e.target.value)}
-              onLastNameChange={(e: ChangeEvent<HTMLInputElement>) => setLastName(e.target.value)}
+              onFirstNameChange={(e) => setFirstName(e.target.value)}
+              onLastNameChange={(e) => setLastName(e.target.value)}
             />
-            <p className="text-xs text-slate-500 mt-2">
-              Make sure this matches the name on your government ID. If you go by another name, you can add a preferred
-              first name.
+            <p className="text-xs text-slate-500 mt-1.5 ml-1">
+              Matches your government ID.
             </p>
           </div>
 
-          {/* Date of birth Section */}
-          <div>
-            <label htmlFor="birth" className="block text-sm font-medium text-slate-900 mb-3">
-              Date of birth
-            </label>
+          <div className="relative">
             <InputDate
               value={birthdate}
               onChange={(e) => setBirthdate(e.target.value)}
               required
             />
-            <p className="text-xs text-slate-500 mt-2">
-              To sign up, you need to be at least 18. Your birthday won&apos;t be shared with other people who use
-              Rentverse.
-            </p>
+            <Calendar size={18} className="absolute right-4 top-3.5 text-slate-400 pointer-events-none" />
+          </div>
+        </div>
+
+        {/* SECTION 2: CONTACT */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-slate-800 font-medium border-b border-slate-100 pb-2">
+            <Mail size={18} className="text-teal-600" />
+            <h3>Contact Details</h3>
           </div>
 
-          {/* Contact info Section */}
-          <div>
-            <label htmlFor="contactInfo" className="block text-sm font-medium text-slate-900 mb-3">
-              Contact info
-            </label>
-            <div className="space-y-4">
-              <InputEmail
-                value={email}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                placeholder="me@email.com"
-                required
-              />
-              <InputPhone
-                value={phone}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
-                placeholder="Phone number"
-                required
-              />
-            </div>
-            <p className="text-xs text-slate-500 mt-2">
-              We&apos;ll email you rent confirmations and receipts. We may also contact you via phone for important updates.
-            </p>
+          <InputEmail
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            required
+          />
+          <InputPhone
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Mobile number"
+            required
+          />
+        </div>
+
+        {/* SECTION 3: SECURITY (Password) */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-slate-800 font-medium border-b border-slate-100 pb-2">
+            <ShieldCheck size={18} className="text-teal-600" />
+            <h3>Security</h3>
           </div>
 
-          {/* Password Section */}
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-slate-900 mb-3">
-              Password
-            </label>
+          <div className="relative">
             <InputPassword
               value={signUpPassword}
-              onChange={(e: ChangeEvent<HTMLInputElement>) => setSignUpPassword(e.target.value)}
-              placeholder="Password"
+              onChange={(e) => setSignUpPassword(e.target.value)}
+              placeholder="Create a strong password"
               required
-              showStrengthIndicator={true}
+              showStrengthIndicator={false}
             />
           </div>
 
-          {/* Terms and Conditions */}
-          <div className="text-xs text-slate-600 leading-relaxed">
-            By selecting Agree and continue, I agree to Rentverse&apos;s{' '}
-            <a href="#" className="text-teal-600 hover:underline">Terms of Service</a>,{' '}
-            <a href="#" className="text-teal-600 hover:underline">Payments Terms of Service</a>, and{' '}
-            <a href="#" className="text-teal-600 hover:underline">Nondiscrimination Policy</a>{' '}
-            and acknowledge the{' '}
-            <a href="#" className="text-teal-600 hover:underline">Privacy Policy</a>.
+          {/* A++ UI: Password Checklist */}
+          <div className={clsx(
+            "grid grid-cols-3 gap-2 p-3 rounded-xl transition-colors duration-300",
+            allPasswordValid ? "bg-teal-50 border border-teal-100" : "bg-slate-50"
+          )}>
+            {passwordRequirements.map((req, i) => (
+              <div key={i} className="flex items-center gap-1.5">
+                <div className={clsx(
+                  "w-4 h-4 rounded-full flex items-center justify-center border transition-all",
+                  req.valid ? "bg-teal-500 border-teal-500" : "border-slate-300 bg-white"
+                )}>
+                  {req.valid && <Check size={10} className="text-white" strokeWidth={4} />}
+                </div>
+                <span className={clsx(
+                  "text-xs font-medium transition-colors",
+                  req.valid ? "text-teal-700" : "text-slate-500"
+                )}>
+                  {req.label}
+                </span>
+              </div>
+            ))}
+          </div>
+          
+          {/* Module 1 Hint */}
+          <p className="text-xs text-slate-500 italic bg-blue-50 p-2 rounded text-center">
+            ✨ <strong>Tip:</strong> You can enable 2-Factor Authentication (MFA) after signing up for extra security.
+          </p>
+        </div>
+
+        {/* FOOTER */}
+        <div className="pt-2">
+          <div className="text-xs text-slate-500 text-center mb-4 leading-relaxed">
+            By selecting <strong>Agree and continue</strong>, I agree to Rentverse&apos;s{' '}
+            <span className="text-teal-600 font-medium cursor-pointer">Terms of Service</span> and{' '}
+            <span className="text-teal-600 font-medium cursor-pointer">Privacy Policy</span>.
           </div>
 
-          {/* Submit Button */}
           <ButtonFilled
             type="submit"
             disabled={!isSignUpFormValid() || isLoading}
+            className={clsx(
+              "transform transition-all active:scale-[0.98]",
+              isLoading ? "opacity-80 cursor-wait" : "hover:shadow-lg"
+            )}
           >
-            {isLoading ? 'Loading...' : 'Agree and continue'}
+            {isLoading ? 'Creating Account...' : 'Agree and continue'}
           </ButtonFilled>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   )
 
   if (isModal) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
         {containerContent}
       </div>
     )
