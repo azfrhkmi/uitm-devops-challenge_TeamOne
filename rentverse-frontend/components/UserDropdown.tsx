@@ -212,6 +212,15 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
         </Link>
         
         <Link
+          href="/account/security"
+          onClick={onClose}
+          className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors duration-200"
+        >
+          <Shield size={18} className="mr-3 text-slate-400" />
+          <span className="font-medium">Login & Security</span>
+        </Link>
+
+        <Link
           href="/account/settings"
           onClick={onClose}
           className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors duration-200"
