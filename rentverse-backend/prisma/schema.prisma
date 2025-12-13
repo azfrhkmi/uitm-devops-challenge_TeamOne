@@ -49,10 +49,13 @@ model User {
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
   verifiedAt     DateTime?
+  isVerified     Boolean   @default(false)
+  verificationToken String?
 
   // === SECURITY: MFA ===
   mfaSecret  String?
   mfaEnabled Boolean @default(false)
+  lastMfaChange DateTime?
 
   // === SECURITY: ACCOUNT LOCKOUT ===
   failedLoginAttempts Int       @default(0)

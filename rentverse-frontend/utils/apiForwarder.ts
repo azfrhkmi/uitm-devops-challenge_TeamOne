@@ -15,12 +15,12 @@ export async function forwardRequest(
   options: ForwardRequestOptions = {},
 ): Promise<Response> {
   const { timeout = 30000, retries = 0, ...fetchOptions } = options
-  
+
   // Ensure proper URL construction by removing trailing slash from base and leading slash from endpoint
   const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
   const url = `${baseUrl}${cleanEndpoint}`
-  
+
   // Debug log for development
   if (process.env.NODE_ENV === 'development') {
     console.log(`[API] ${options.method || 'GET'} ${url}`)
@@ -131,8 +131,8 @@ export async function propertiesApiForwarder(
     const fullEndpoint = queryString ? `${endpoint}?${queryString}` : endpoint
 
     // For POST/PUT/PATCH requests, include the body
-    const body = ['POST', 'PUT', 'PATCH'].includes(request.method) 
-      ? await request.text() 
+    const body = ['POST', 'PUT', 'PATCH'].includes(request.method)
+      ? await request.text()
       : undefined
 
     const response = await forwardRequest(fullEndpoint, {
@@ -163,7 +163,7 @@ export async function propertiesApiForwarder(
 
   } catch (error) {
     console.error('Properties API forwarding error:', error)
-    
+
     return Response.json(
       createErrorResponse(
         'Failed to fetch properties',
@@ -171,6 +171,54 @@ export async function propertiesApiForwarder(
         500
       ),
       { status: 500 }
+    )
+  }
+}
+
+/**
+ * Generic API Forwarder for Next.js API routes.
+ * Forwards requests to the backend API preserving auth headers.
+ */
+export async function apiForwarder(
+  req: Request,
+  backendPath: string
+): Promise<Response> {
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+
+  try {
+    // Get body if present
+    let body: string | undefined
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      try {
+        body = await req.text()
+      } catch {
+        // No body
+      }
+    }
+
+    // Forward authorization header
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    }
+    const authHeader = req.headers.get('Authorization')
+    if (authHeader) {
+      headers['Authorization'] = authHeader
+    }
+
+    const response = await fetch(`${BACKEND_URL}${backendPath}`, {
+      method: req.method,
+      headers,
+      body: body || undefined,
+    })
+
+    const data = await response.json()
+
+    return Response.json(data, { status: response.status })
+  } catch (error) {
+    console.error(`API Forwarder Error [${backendPath}]:`, error)
+    return Response.json(
+      { success: false, message: 'Backend connection failed' },
+      { status: 502 }
     )
   }
 }
