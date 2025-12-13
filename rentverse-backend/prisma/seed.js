@@ -1,9 +1,9 @@
 const { prisma } = require('../src/config/database');
 const {
   seedPropertyTypes,
-  seedAmenities, 
+  seedAmenities,
   seedUsers,
-  seedProperties
+  seedProperties,
 } = require('./seeders');
 
 async function main() {
@@ -34,9 +34,11 @@ async function main() {
 
     // Final summary
     console.log('🎉 ===== SEEDING COMPLETED SUCCESSFULLY ===== 🎉\n');
-    
+
     console.log('📊 Summary:');
-    console.log(`✅ Property Types: ${results.propertyTypes?.created || 0} processed`);
+    console.log(
+      `✅ Property Types: ${results.propertyTypes?.created || 0} processed`
+    );
     console.log(`✅ Amenities: ${results.amenities?.created || 0} processed`);
     console.log(`✅ Users: ${results.users?.created || 0} created`);
     console.log(`✅ Properties: ${results.properties?.created || 0} created`);
@@ -50,7 +52,6 @@ async function main() {
     console.log('   API Documentation: http://localhost:3000/docs');
     console.log('   Health Check: http://localhost:3000/health');
     console.log('   API Base: http://localhost:3000/api');
-
   } catch (error) {
     console.error('❌ Seeding failed:', error);
     throw error;
@@ -61,7 +62,7 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async (e) => {
+  .catch(async e => {
     console.error(e);
     await prisma.$disconnect();
     process.exit(1);

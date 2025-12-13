@@ -6,52 +6,52 @@ const propertyTypes = [
     name: 'Apartment',
     description: 'High-rise residential unit in apartment building',
     icon: '🏢', // gedung tinggi
-    isActive: true
+    isActive: true,
   },
   {
     code: 'CONDOMINIUM',
-    name: 'Condominium', 
-    description: 'Luxury residential unit with premium facilities and amenities',
+    name: 'Condominium',
+    description:
+      'Luxury residential unit with premium facilities and amenities',
     icon: '🏙️', // skyline mewah
-    isActive: true
+    isActive: true,
   },
   {
     code: 'HOUSE',
     name: 'House',
     description: 'Standalone landed residential property',
     icon: '🏠', // rumah biasa
-    isActive: true
+    isActive: true,
   },
   {
     code: 'TOWNHOUSE',
     name: 'Townhouse',
     description: 'Multi-level landed property in planned development',
     icon: '🏘️', // kompleks rumah
-    isActive: true
+    isActive: true,
   },
   {
     code: 'STUDIO',
     name: 'Studio',
     description: 'Open-concept single room residential unit',
     icon: '🎛️', // studio/ruang tunggal
-    isActive: true
+    isActive: true,
   },
   {
     code: 'PENTHOUSE',
     name: 'Penthouse',
     description: 'Luxury apartment on the top floor with premium amenities',
     icon: '🌆', // pemandangan atap kota
-    isActive: true
+    isActive: true,
   },
   {
     code: 'VILLA',
     name: 'Villa',
     description: 'Luxurious single-family home with extensive grounds',
     icon: '🏡', // villa dengan halaman
-    isActive: true
-  }
+    isActive: true,
+  },
 ];
-
 
 async function seedPropertyTypes() {
   console.log('🏠 Starting property types seeding...');
@@ -69,18 +69,22 @@ async function seedPropertyTypes() {
             name: typeData.name,
             description: typeData.description,
             icon: typeData.icon,
-            isActive: typeData.isActive
+            isActive: typeData.isActive,
           },
-          create: typeData
+          create: typeData,
         });
 
         if (propertyType) {
-          console.log(`✅ Property type: ${propertyType.name} (${propertyType.code})`);
+          console.log(
+            `✅ Property type: ${propertyType.name} (${propertyType.code})`
+          );
           createdCount++;
         }
-
       } catch (error) {
-        console.error(`❌ Error with property type "${typeData.code}":`, error.message);
+        console.error(
+          `❌ Error with property type "${typeData.code}":`,
+          error.message
+        );
       }
     }
 
@@ -88,7 +92,6 @@ async function seedPropertyTypes() {
     console.log(`✅ Successfully processed: ${createdCount} property types`);
 
     return { success: true, created: createdCount };
-
   } catch (error) {
     console.error('❌ Error during property types seeding:', error);
     throw error;
@@ -98,7 +101,7 @@ async function seedPropertyTypes() {
 // Function to clean up property types
 async function cleanupPropertyTypes() {
   console.log('🧹 Cleaning up existing property types...');
-  
+
   try {
     const deleted = await prisma.propertyType.deleteMany({});
     console.log(`🗑️  Deleted ${deleted.count} property types`);
@@ -112,7 +115,7 @@ async function cleanupPropertyTypes() {
 module.exports = {
   seedPropertyTypes,
   cleanupPropertyTypes,
-  propertyTypes
+  propertyTypes,
 };
 
 // Allow direct execution

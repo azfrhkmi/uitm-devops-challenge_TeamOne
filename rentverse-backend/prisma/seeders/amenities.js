@@ -6,7 +6,7 @@ const amenities = [
   { name: 'Central Air Conditioning', category: 'Comfort' },
   { name: 'Heating System', category: 'Comfort' },
   { name: 'Ceiling Fan', category: 'Comfort' },
-  
+
   // Security & Safety
   { name: '24-Hour Security', category: 'Security' },
   { name: 'CCTV Surveillance', category: 'Security' },
@@ -14,11 +14,11 @@ const amenities = [
   { name: 'Security Guard', category: 'Security' },
   { name: 'Intercom System', category: 'Security' },
   { name: 'Fire Safety System', category: 'Security' },
-  
+
   // Recreation & Fitness
   { name: 'Swimming Pool', category: 'Recreation' },
   { name: 'Infinity Pool', category: 'Recreation' },
-  { name: 'Children\'s Pool', category: 'Recreation' },
+  { name: "Children's Pool", category: 'Recreation' },
   { name: 'Gymnasium', category: 'Recreation' },
   { name: 'Fitness Center', category: 'Recreation' },
   { name: 'Yoga Studio', category: 'Recreation' },
@@ -26,10 +26,10 @@ const amenities = [
   { name: 'Badminton Court', category: 'Recreation' },
   { name: 'Basketball Court', category: 'Recreation' },
   { name: 'Jogging Track', category: 'Recreation' },
-  { name: 'Children\'s Playground', category: 'Recreation' },
+  { name: "Children's Playground", category: 'Recreation' },
   { name: 'Game Room', category: 'Recreation' },
   { name: 'Pool Table', category: 'Recreation' },
-  
+
   // Parking & Transportation
   { name: 'Covered Parking', category: 'Parking' },
   { name: 'Open Parking', category: 'Parking' },
@@ -39,7 +39,7 @@ const amenities = [
   { name: 'LRT Access', category: 'Transportation' },
   { name: 'MRT Access', category: 'Transportation' },
   { name: 'Bus Stop Nearby', category: 'Transportation' },
-  
+
   // Amenities & Facilities
   { name: 'Elevator', category: 'Facilities' },
   { name: 'Private Lift Lobby', category: 'Facilities' },
@@ -49,7 +49,7 @@ const amenities = [
   { name: 'Package Receiving', category: 'Facilities' },
   { name: 'Laundry Room', category: 'Facilities' },
   { name: 'Dry Cleaning Service', category: 'Facilities' },
-  
+
   // Social & Entertainment
   { name: 'BBQ Area', category: 'Social' },
   { name: 'Function Hall', category: 'Social' },
@@ -60,14 +60,14 @@ const amenities = [
   { name: 'Sky Lounge', category: 'Social' },
   { name: 'Rooftop Garden', category: 'Social' },
   { name: 'Landscape Garden', category: 'Social' },
-  
+
   // Connectivity & Technology
   { name: 'High-Speed Internet', category: 'Technology' },
   { name: 'Fiber Internet', category: 'Technology' },
   { name: 'WiFi Coverage', category: 'Technology' },
   { name: 'Smart Home Technology', category: 'Technology' },
   { name: 'Cable TV Ready', category: 'Technology' },
-  
+
   // Commercial & Retail
   { name: 'Shopping Mall', category: 'Commercial' },
   { name: 'Retail Shops', category: 'Commercial' },
@@ -77,7 +77,7 @@ const amenities = [
   { name: 'Cafe', category: 'Commercial' },
   { name: 'Bank', category: 'Commercial' },
   { name: 'ATM', category: 'Commercial' },
-  
+
   // Health & Wellness
   { name: 'Medical Center', category: 'Health' },
   { name: 'Clinic', category: 'Health' },
@@ -85,27 +85,27 @@ const amenities = [
   { name: 'Spa & Wellness', category: 'Health' },
   { name: 'Sauna', category: 'Health' },
   { name: 'Steam Room', category: 'Health' },
-  
+
   // Education & Learning
   { name: 'International School', category: 'Education' },
   { name: 'Kindergarten', category: 'Education' },
   { name: 'Tuition Center', category: 'Education' },
   { name: 'Study Room', category: 'Education' },
-  
+
   // Environment & Sustainability
   { name: 'Green Building', category: 'Environment' },
   { name: 'Solar Panels', category: 'Environment' },
   { name: 'Rainwater Harvesting', category: 'Environment' },
   { name: 'Waste Management', category: 'Environment' },
   { name: 'Recycling Center', category: 'Environment' },
-  
+
   // Special Features
   { name: 'Marina Access', category: 'Special' },
   { name: 'Beach Access', category: 'Special' },
   { name: 'Golf Course', category: 'Special' },
   { name: 'Theme Park Access', category: 'Special' },
   { name: 'Convention Center', category: 'Special' },
-  { name: 'Hotel Services', category: 'Special' }
+  { name: 'Hotel Services', category: 'Special' },
 ];
 
 async function seedAmenities() {
@@ -121,37 +121,40 @@ async function seedAmenities() {
         const amenity = await prisma.amenity.upsert({
           where: { name: amenityData.name },
           update: {
-            category: amenityData.category
+            category: amenityData.category,
           },
-          create: amenityData
+          create: amenityData,
         });
 
         if (amenity) {
           createdCount++;
         }
-
       } catch (error) {
-        console.error(`❌ Error with amenity "${amenityData.name}":`, error.message);
+        console.error(
+          `❌ Error with amenity "${amenityData.name}":`,
+          error.message
+        );
         skippedCount++;
       }
     }
 
     console.log(`✅ Successfully processed: ${createdCount} amenities`);
-    
+
     // Show summary by category
     const categorySummary = await prisma.amenity.groupBy({
       by: ['category'],
       _count: { id: true },
-      orderBy: { _count: { id: 'desc' } }
+      orderBy: { _count: { id: 'desc' } },
     });
 
     console.log('\n📊 Amenities by Category:');
     for (const cat of categorySummary) {
-      console.log(`   ${cat.category || 'No Category'}: ${cat._count.id} amenities`);
+      console.log(
+        `   ${cat.category || 'No Category'}: ${cat._count.id} amenities`
+      );
     }
 
     return { success: true, created: createdCount };
-
   } catch (error) {
     console.error('❌ Error during amenities seeding:', error);
     throw error;
@@ -161,7 +164,7 @@ async function seedAmenities() {
 // Function to clean up amenities
 async function cleanupAmenities() {
   console.log('🧹 Cleaning up existing amenities...');
-  
+
   try {
     const deleted = await prisma.amenity.deleteMany({});
     console.log(`🗑️  Deleted ${deleted.count} amenities`);
@@ -175,7 +178,7 @@ async function cleanupAmenities() {
 module.exports = {
   seedAmenities,
   cleanupAmenities,
-  amenities
+  amenities,
 };
 
 // Allow direct execution

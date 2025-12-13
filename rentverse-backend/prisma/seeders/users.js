@@ -11,10 +11,10 @@ const users = [
     role: 'ADMIN',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1990-01-01')
+    dateOfBirth: new Date('1990-01-01'),
   },
   {
-    email: 'landlord@rentverse.com', 
+    email: 'landlord@rentverse.com',
     firstName: 'John',
     lastName: 'Landlord',
     name: 'John Landlord',
@@ -22,18 +22,18 @@ const users = [
     role: 'USER',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1985-05-15')
+    dateOfBirth: new Date('1985-05-15'),
   },
   {
     email: 'tenant@rentverse.com',
     firstName: 'Jane',
     lastName: 'Tenant',
-    name: 'Jane Tenant', 
+    name: 'Jane Tenant',
     phone: '+60123456787',
     role: 'USER',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1992-08-20')
+    dateOfBirth: new Date('1992-08-20'),
   },
   {
     email: 'landlord2@rentverse.com',
@@ -44,7 +44,7 @@ const users = [
     role: 'USER',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1980-12-10')
+    dateOfBirth: new Date('1980-12-10'),
   },
   {
     email: 'tenant2@rentverse.com',
@@ -52,10 +52,10 @@ const users = [
     lastName: 'Aminah',
     name: 'Siti Aminah',
     phone: '+60987654322',
-    role: 'USER', 
+    role: 'USER',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1995-03-25')
+    dateOfBirth: new Date('1995-03-25'),
   },
   {
     email: 'landlord3@rentverse.com',
@@ -66,7 +66,7 @@ const users = [
     role: 'USER',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1988-07-08')
+    dateOfBirth: new Date('1988-07-08'),
   },
   {
     email: 'superadmin@rentverse.com',
@@ -77,9 +77,8 @@ const users = [
     role: 'ADMIN',
     isActive: true,
     verifiedAt: new Date(),
-    dateOfBirth: new Date('1975-11-30')
-  }
-
+    dateOfBirth: new Date('1975-11-30'),
+  },
 ];
 
 async function seedUsers() {
@@ -96,18 +95,20 @@ async function seedUsers() {
       try {
         // Check if user already exists
         const existingUser = await prisma.user.findUnique({
-          where: { email: userData.email }
+          where: { email: userData.email },
         });
 
         if (existingUser) {
-          console.log(`⏭️  User "${userData.email}" already exists, skipping...`);
+          console.log(
+            `⏭️  User "${userData.email}" already exists, skipping...`
+          );
           skippedCount++;
           continue;
         }
 
         // Determine password based on user
         let userPassword = hashedPassword; // Default: 'password123'
-        
+
         // Special handling for specific users
         if (userData.email === 'superadmin@rentverse.com') {
           userPassword = await bcrypt.hash('superadmin', 12);
@@ -116,22 +117,26 @@ async function seedUsers() {
         const user = await prisma.user.create({
           data: {
             ...userData,
-            password: userPassword
+            password: userPassword,
           },
           select: {
             id: true,
             email: true,
             name: true,
             role: true,
-            isActive: true
-          }
+            isActive: true,
+          },
         });
 
-        console.log(`✅ Created user: ${user.name} (${user.role}) - ${user.email}`);
+        console.log(
+          `✅ Created user: ${user.name} (${user.role}) - ${user.email}`
+        );
         createdCount++;
-
       } catch (error) {
-        console.error(`❌ Error creating user "${userData.email}":`, error.message);
+        console.error(
+          `❌ Error creating user "${userData.email}":`,
+          error.message
+        );
       }
     }
 
@@ -143,7 +148,7 @@ async function seedUsers() {
     const userStats = await prisma.user.groupBy({
       by: ['role'],
       _count: { id: true },
-      orderBy: { role: 'asc' }
+      orderBy: { role: 'asc' },
     });
 
     console.log('\n👥 Users by Role:');
@@ -153,12 +158,14 @@ async function seedUsers() {
 
     console.log('\n🔑 Demo Credentials:');
     for (const user of users) {
-      const password = user.email === 'superadmin@rentverse.com' ? 'superadmin' : 'password123';
+      const password =
+        user.email === 'superadmin@rentverse.com'
+          ? 'superadmin'
+          : 'password123';
       console.log(`   ${user.role}: ${user.email} / ${password}`);
     }
 
     return { success: true, created: createdCount };
-
   } catch (error) {
     console.error('❌ Error during users seeding:', error);
     throw error;
@@ -168,7 +175,7 @@ async function seedUsers() {
 // Function to clean up users
 async function cleanupUsers() {
   console.log('🧹 Cleaning up existing users...');
-  
+
   try {
     const deleted = await prisma.user.deleteMany({});
     console.log(`🗑️  Deleted ${deleted.count} users`);
@@ -182,7 +189,7 @@ async function cleanupUsers() {
 module.exports = {
   seedUsers,
   cleanupUsers,
-  users
+  users,
 };
 
 // Allow direct execution

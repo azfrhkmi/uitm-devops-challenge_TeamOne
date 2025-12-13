@@ -43,14 +43,14 @@ const router = express.Router();
  *         placeId:
  *           type: string
  *           description: Google Places ID
- *         latitude:
- *           type: number
- *           format: float
- *           description: Latitude coordinate
- *         longitude:
- *           type: number
- *           format: float
- *           description: Longitude coordinate
+ *         # latitude:
+ *         #   type: number
+ *         #   format: float
+ *         #   description: Latitude coordinate
+ *         # longitude:
+ *         #   type: number
+ *         #   format: float
+ *         #   description: Longitude coordinate
  *         mapsUrl:
  *           type: string
  *           nullable: true
@@ -151,34 +151,26 @@ const router = express.Router();
  *         totalRatings: 12
  *         isFavorited: false
  *         favoriteCount: 8
- *         images: [
- *           "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
- *           "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800",
- *           "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=800"
- *         ]
+ *         images:
+ *           - "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
+ *           - "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800"
+ *           - "https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=800"
  *         propertyType:
  *           id: "cltxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
  *           code: "APARTMENT"
  *           name: "Apartment"
  *           description: "Multi-unit residential building"
- *         amenities: [
- *           {
- *             amenity: {
+ *         amenities:
+ *           - amenity:
  *               id: "amenity-ac-001"
  *               name: "Air Conditioning"
  *               description: "Central air conditioning system"
  *               category: "COMFORT"
- *             }
- *           },
- *           {
- *             amenity: {
+ *           - amenity:
  *               id: "amenity-pool-001"
  *               name: "Swimming Pool"
  *               description: "Community swimming pool"
  *               category: "RECREATION"
- *             }
- *           }
- *         ]
  *         owner:
  *           id: "user-123-456-789"
  *           email: "landlord@example.com"
@@ -298,9 +290,8 @@ const router = express.Router();
  *             example:
  *               success: true
  *               data:
- *                 properties: [
- *                   {
- *                     id: "96712e5d-fef2-4d26-affc-b2a66efe51f6"
+ *                 properties:
+ *                   - id: "96712e5d-fef2-4d26-affc-b2a66efe51f6"
  *                     code: "PROP-ML-010"
  *                     title: "Historic Shophouse in Malacca"
  *                     description: "Beautifully restored 3-story shophouse in UNESCO World Heritage area."
@@ -325,23 +316,21 @@ const router = express.Router();
  *                     totalRatings: 12
  *                     isFavorited: false
  *                     favoriteCount: 8
- *                     images: [
- *                       "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
- *                     ]
+ *                     images:
+ *                       - "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
  *                     propertyType:
  *                       code: "APARTMENT"
  *                       name: "Apartment"
- *                     amenities: [
- *                       { amenity: { name: "Air Conditioning", category: "COMFORT" } }
- *                     ]
+ *                     amenities:
+ *                       - amenity:
+ *                           name: "Air Conditioning"
+ *                           category: "COMFORT"
  *                     owner:
  *                       name: "John Doe"
  *                       email: "landlord@example.com"
  *                     createdAt: "2025-09-19T08:30:45.123Z"
  *                     updatedAt: "2025-09-19T10:15:22.456Z"
- *                   },
- *                   {
- *                     id: "a7b23c4d-e5f6-7890-abcd-ef1234567890"
+ *                   - id: "a7b23c4d-e5f6-7890-abcd-ef1234567890"
  *                     code: "PROP-PG-011"
  *                     title: "Seaside Luxury Condo at Tanjung Bungah"
  *                     description: "Premium beachfront condominium with stunning sea views."
@@ -366,23 +355,23 @@ const router = express.Router();
  *                     totalRatings: 23
  *                     isFavorited: true
  *                     favoriteCount: 15
- *                     images: [
- *                       "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
- *                     ]
+ *                     images:
+ *                       - "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800"
  *                     propertyType:
  *                       code: "CONDOMINIUM"
  *                       name: "Condominium"
- *                     amenities: [
- *                       { amenity: { name: "Swimming Pool", category: "RECREATION" } },
- *                       { amenity: { name: "24-Hour Security", category: "SECURITY" } }
- *                     ]
+ *                     amenities:
+ *                       - amenity:
+ *                           name: "Swimming Pool"
+ *                           category: "RECREATION"
+ *                       - amenity:
+ *                           name: "24-Hour Security"
+ *                           category: "SECURITY"
  *                     owner:
  *                       name: "John Doe"
  *                       email: "landlord@example.com"
  *                     createdAt: "2025-09-20T14:22:10.987Z"
  *                     updatedAt: "2025-09-20T16:45:33.234Z"
- *                   }
- *                 ]
  *                 pagination:
  *                   page: 1
  *                   limit: 10
@@ -702,21 +691,16 @@ router.get('/geojson', propertiesController.getGeoJSON);
  *                     totalRatings: 12
  *                     isFavorited: false
  *                     favoriteCount: 8
- *                     images: [
- *                       "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
- *                       "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800"
- *                     ]
+ *                     images:
+ *                       - "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
+ *                       - "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800"
  *                     propertyType:
  *                       code: "APARTMENT"
  *                       name: "Apartment"
- *                     amenities: [
- *                       {
- *                         amenity: {
+ *                     amenities:
+ *                       - amenity:
  *                           name: "Air Conditioning"
  *                           category: "COMFORT"
- *                         }
- *                       }
- *                     ]
  *                     owner:
  *                       name: "John Doe"
  *                       email: "landlord@example.com"
@@ -1893,23 +1877,6 @@ router.get(
  *                           createdAt:
  *                             type: string
  *                             format: date-time
- *       404:
-/**
- * @swagger
- * /api/properties/{id}/favorite-stats:
- *   get:
- *     summary: Get favorite statistics for a property
- *     tags: [Properties]
- *     parameters:
- *       - in: path
- *         name: id
- *         schema:
- *           type: string
- *         required: true
- *         description: UUID of the property
- *     responses:
- *       200:
- *         description: Favorite statistics retrieved successfully
  *       404:
  *         description: Property not found
  *       500:

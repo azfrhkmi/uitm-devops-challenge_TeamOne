@@ -4,9 +4,9 @@ const { disconnectDB } = require('./src/config/database');
 const PORT = process.env.PORT || 3000;
 
 // Graceful shutdown
-const gracefulShutdown = async (signal) => {
+const gracefulShutdown = async signal => {
   console.log(`\n🛑 Received ${signal}. Shutting down gracefully...`);
-  
+
   try {
     await disconnectDB();
     console.log('👋 Database disconnected successfully');

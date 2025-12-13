@@ -96,13 +96,14 @@ async function main() {
     data: {
       code: 'APT001',
       title: 'Beautiful Downtown Apartment',
-      description: 'A stunning 2-bedroom apartment in the heart of the city with modern amenities.',
+      description:
+        'A stunning 2-bedroom apartment in the heart of the city with modern amenities.',
       address: '123 Main Street',
       city: 'New York',
       state: 'NY',
       country: 'US',
       zipCode: '10001',
-      price: 2500.00,
+      price: 2500.0,
       currencyCode: 'USD',
       bedrooms: 2,
       bathrooms: 2,
@@ -112,7 +113,7 @@ async function main() {
       status: 'APPROVED',
       images: [
         'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267',
-        'https://images.unsplash.com/photo-1484154218962-a197022b5858'
+        'https://images.unsplash.com/photo-1484154218962-a197022b5858',
       ],
       ownerId: landlord.id,
       propertyTypeId: apartmentType.id,
@@ -123,13 +124,14 @@ async function main() {
     data: {
       code: 'STU001',
       title: 'Cozy Studio Near Park',
-      description: 'A cozy studio apartment perfect for students or young professionals.',
+      description:
+        'A cozy studio apartment perfect for students or young professionals.',
       address: '456 Park Avenue',
       city: 'New York',
       state: 'NY',
       country: 'US',
       zipCode: '10002',
-      price: 1200.00,
+      price: 1200.0,
       currencyCode: 'USD',
       bedrooms: 0,
       bathrooms: 1,
@@ -137,9 +139,7 @@ async function main() {
       furnished: false,
       isAvailable: true,
       status: 'APPROVED',
-      images: [
-        'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688'
-      ],
+      images: ['https://images.unsplash.com/photo-1502672260266-1c1ef2d93688'],
       ownerId: landlord.id,
       propertyTypeId: studioType.id,
     },
@@ -177,7 +177,7 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-  .catch(async (e) => {
+  .catch(async e => {
     console.error(e);
     await prisma.$disconnect();
     process.exit(1);
