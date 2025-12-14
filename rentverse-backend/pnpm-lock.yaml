@@ -61,6 +61,9 @@ importers:
       multer:
         specifier: ^2.0.2
         version: 2.0.2
+      nodemailer:
+        specifier: ^7.0.11
+        version: 7.0.11
       otplib:
         specifier: ^12.0.1
         version: 12.0.1
@@ -2303,6 +2306,13 @@ packages:
       {
         integrity: sha512-Jd4cvbJMryN21r5HgxQOpMEqv+ooke/korixNNK3mGqfGJmy0M77WDDzo/05969+OkMy3XW1UuZsSmW9KQm7Fw==,
       }
+
+  nodemailer@7.0.11:
+    resolution:
+      {
+        integrity: sha512-gnXhNRE0FNhD7wPSCGhdNh46Hs6nm+uTyg+Kq0cZukNQiYdnCsoQjodNP9BQVG9XrcK/v6/MgpAPBUFyzh9pvw==,
+      }
+    engines: { node: '>=6.0.0' }
 
   nodemon@3.1.10:
     resolution:
@@ -4800,6 +4810,8 @@ snapshots:
   node-rsa@1.1.1:
     dependencies:
       asn1: 0.2.6
+
+  nodemailer@7.0.11: {}
 
   nodemon@3.1.10:
     dependencies:

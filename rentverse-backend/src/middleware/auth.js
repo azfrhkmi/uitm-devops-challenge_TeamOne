@@ -32,7 +32,18 @@ const auth = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    // Attach decoded user payload (including userId and role) to req object
+    // We attach specific fields to avoid leaking sensitive data if req.user is logged
+    req.user = {
+      id: user.id,
+      userId: user.id, // For backward compatibility if needed, though id is cleaner
+      role: user.role,
+      email: user.email,
+    };
+
+    // Also attach full user object if needed by legacy code, but prefer using req.user.id/role
+    req.userData = user;
+
     next();
   } catch (error) {
     console.error('Auth middleware error:', error);
@@ -43,7 +54,11 @@ const auth = async (req, res, next) => {
   }
 };
 
-const authorize = (...roles) => {
+/**
+ * RBAC Middleware Factory
+ * @param {(string|string[])} allowedRoles - Single role string or array of allowed roles
+ */
+const authorize = (allowedRoles) => {
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({
@@ -51,6 +66,9 @@ const authorize = (...roles) => {
         message: 'Access denied. User not authenticated.',
       });
     }
+
+    // Normalize input to array
+    const roles = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
 
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({

@@ -1,8 +1,10 @@
 const express = require('express');
 const { body } = require('express-validator');
 const { auth, authorize } = require('../../middleware/auth');
+const { validate, propertyValidationRules } = require('../../utils/validators');
 const propertiesController = require('./properties.controller');
 const propertyViewsController = require('../propertyViews/propertyViews.controller');
+const { prisma } = require('../../config/database');
 
 const router = express.Router();
 
@@ -1920,11 +1922,13 @@ router.get('/:id/favorite-stats', propertyViewsController.getFavoriteStats);
  *         description: Forbidden - Admin access required
  *       404:
  *         description: Property not found
+ *       500:
+ *         description: Internal server error
  */
 router.post(
   '/:id/approve',
   auth,
-  authorize('ADMIN'),
+  authorize(['ADMIN']),
   propertiesController.approveProperty
 );
 
@@ -1969,7 +1973,7 @@ router.post(
 router.post(
   '/:id/reject',
   auth,
-  authorize('ADMIN'),
+  authorize(['ADMIN']),
   propertiesController.rejectProperty
 );
 
@@ -2064,7 +2068,7 @@ router.get(
 router.post(
   '/auto-approve/toggle',
   auth,
-  authorize('ADMIN'),
+  authorize(['ADMIN']),
   propertiesController.togglePropertyAutoApprove
 );
 
@@ -2169,7 +2173,7 @@ router.get(
 router.post(
   '/fix-approval-inconsistency',
   auth,
-  authorize('ADMIN'),
+  authorize(['ADMIN']),
   propertiesController.fixApprovalDataInconsistency
 );
 

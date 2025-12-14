@@ -31,6 +31,8 @@ app.use((req, res, next) => {
 // Connect to database
 connectDB();
 
+const { globalLimiter } = require('./middleware/rateLimit');
+
 // Middleware
 app.use(
   helmet({
@@ -38,6 +40,9 @@ app.use(
     crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
+
+// Apply global rate limiter to all api routes
+app.use('/api', globalLimiter);
 
 // Simple CORS configuration - allow everything in development
 app.use(
