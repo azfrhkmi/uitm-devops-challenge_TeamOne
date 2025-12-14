@@ -1,4 +1,5 @@
 const propertiesService = require('./properties.service');
+const auditService = require('../../services/audit.service');
 const { validationResult } = require('express-validator');
 
 // 🆕 AUTO-APPROVE PROPERTIES STATUS GLOBAL
@@ -124,6 +125,17 @@ class PropertiesController {
         req.user.id
       );
 
+      await auditService.logEvent({
+        userId: req.user.id,
+        action: 'PROPERTY_CREATED',
+        status: 'SUCCESS',
+        severity: 'INFO',
+        eventType: 'DATA',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        details: { propertyId: property.id, title: property.title }
+      });
+
       res.status(201).json({
         success: true,
         message: 'Property created successfully',
@@ -192,6 +204,17 @@ class PropertiesController {
         propertyId,
         req.user
       );
+
+      await auditService.logEvent({
+        userId: req.user.id,
+        action: 'PROPERTY_DELETED',
+        status: 'SUCCESS',
+        severity: 'WARNING',
+        eventType: 'DATA',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        details: { propertyId }
+      });
 
       res.json({
         success: true,

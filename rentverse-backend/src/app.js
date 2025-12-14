@@ -214,6 +214,7 @@ app.use('/api/bookings', bookingRoutes);
 app.use('/api/property-types', propertyTypeRoutes);
 app.use('/api/amenities', amenityRoutes);
 app.use('/api/predictions', predictionRoutes);
+app.use('/api/admin', require('./routes/admin'));
 
 /**
  * @swagger

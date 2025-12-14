@@ -3,7 +3,7 @@
 import React, { useRef, useEffect } from 'react'
 import Link from 'next/link'
 import clsx from 'clsx'
-import { User, Settings, Home, Heart, Search, LogOut, Calendar, Shield } from 'lucide-react'
+import { User, Settings, Home, Heart, Search, LogOut, Calendar, Shield, Activity } from 'lucide-react'
 import useAuthStore from '@/stores/authStore'
 import useCurrentUser from '@/hooks/useCurrentUser'
 
@@ -22,7 +22,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
   const getInitials = (firstName: string, lastName: string): string => {
     const firstInitial = firstName?.charAt(0)?.toUpperCase() || ''
     const lastInitial = lastName?.charAt(0)?.toUpperCase() || ''
-    
+
     // If we have both, use both. If only one, use that one. If none, use email first letter
     if (firstInitial && lastInitial) {
       return firstInitial + lastInitial
@@ -105,7 +105,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
           <div className="w-12 h-12 rounded-full bg-teal-600 text-white font-semibold flex items-center justify-center text-lg">
             {initials}
           </div>
-          
+
           {/* Welcome Message */}
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-slate-600 mb-1">
@@ -116,7 +116,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
             </p>
           </div>
         </div>
-        
+
         {/* Email */}
         <div className="mt-3">
           <p className="text-sm text-slate-500 truncate">
@@ -131,7 +131,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
         <div className="px-4 py-2">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Customer Mode</p>
         </div>
-        
+
         <Link
           href="/property"
           onClick={onClose}
@@ -140,7 +140,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
           <Search size={18} className="mr-3 text-slate-400" />
           <span className="font-medium">Search Property</span>
         </Link>
-        
+
         <Link
           href="/rents"
           onClick={onClose}
@@ -149,7 +149,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
           <Calendar size={18} className="mr-3 text-slate-400" />
           <span className="font-medium">My rents</span>
         </Link>
-        
+
         <Link
           href="/wishlist"
           onClick={onClose}
@@ -166,7 +166,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
         <div className="px-4 py-2">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Seller Mode</p>
         </div>
-        
+
         <Link
           href="/property/all"
           onClick={onClose}
@@ -186,7 +186,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
             <div className="px-4 py-2">
               <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin Portal</p>
             </div>
-            
+
             <Link
               href="/admin"
               onClick={onClose}
@@ -194,6 +194,15 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
             >
               <Shield size={18} className="mr-3 text-slate-400" />
               <span className="font-medium">Admin Dashboard</span>
+            </Link>
+
+            <Link
+              href="/admin/logs"
+              onClick={onClose}
+              className="flex items-center px-4 py-3 text-sm text-slate-700 hover:bg-slate-50 transition-colors duration-200"
+            >
+              <Activity size={18} className="mr-3 text-slate-400" />
+              <span className="font-medium">Security Logs</span>
             </Link>
           </>
         )}
@@ -210,7 +219,7 @@ function UserDropdown({ isOpen, onClose, className }: Readonly<UserDropdownProps
           <User size={18} className="mr-3 text-slate-400" />
           <span className="font-medium">Account</span>
         </Link>
-        
+
         <Link
           href="/account/security"
           onClick={onClose}
